@@ -1,0 +1,31 @@
+name: Run Test Notebook
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+jobs:
+run_test:
+  name: Run the test notebook
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.7'
+        cache: 'pip'
+    - name: Install Dependencies
+      run: pip install -r requirements.txt
+    - name: Run Script
+      run: |
+        jupyter nbconvert --to script Test.ipynb
+        python Test.py
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "10212766+gbelcheva@users.noreply.github.com"
+        git config --local user.name "GitHub Actions"
+        git add test.m3u
+        git commit -m "Updated output"
+        git push origin master
